@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My AI Website</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
+        textarea { width: 100%; height: 100px; margin-bottom: 10px; }
+        button { padding: 10px 20px; background-color: #0070f3; color: white; border: none; cursor: pointer; }
+        #output { margin-top: 20px; padding: 15px; background: #f4f4f4; min-height: 50px; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>Ask the AI</h1>
+    <textarea id="userInput" placeholder="Type your prompt here..."></textarea>
+    <button onclick="askAI()">Send to AI</button>
+    <div id="output">AI response will appear here...</div>
+
+    <script>
+        async function askAI() {
+            const prompt = document.getElementById('userInput').value;
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerText = "Thinking...";
+
+            try {
+                // This calls your secure Vercel function
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: prompt })
+                });
+
+                const data = await response.json();
+                
+                if (data.choices && data.choices[0]) {
+                    outputDiv.innerText = data.choices[0].message.content;
+                } else {
+                    outputDiv.innerText = "Error: " + JSON.stringify(data);
+                }
+            } catch (error) {
+                outputDiv.innerText = "Failed to connect to backend: " + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
